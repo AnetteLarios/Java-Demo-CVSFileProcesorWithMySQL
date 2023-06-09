@@ -13,7 +13,12 @@ public class ApplicationMain {
      **/
     public static void main (String args[]) {
         try {
+            // Tries to pass as reference the filepath of the file to fileOpenAndRead fuction.
             FileProcessorService.fileOpenAndRead("C:\\Users\\SpectrumByte\\eclipse-workspace\\JavaTxtProcessorWithMySQL\\src\\resources\\UsersData.txt");
+            /*
+             If any problem occurs while the program is trying to localize the file, a message
+             will be shown.
+            */
         }catch(Exception e) {
             System.out.println(e.toString());
         }

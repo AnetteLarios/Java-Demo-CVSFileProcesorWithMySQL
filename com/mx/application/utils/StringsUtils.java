@@ -1,6 +1,6 @@
 package com.mx.application.utils;
     /*
-    StringUtils contanis general methods that can be applied to strings.
+    StringUtils contains general methods that can be applied to strings.
 
     @author Anette Larios
     since 23-06-06
@@ -15,9 +15,9 @@ public class StringsUtils {
      * since 2023-06-06
      */
     public static float convertStringToFloat(String dataFromFile) {
-
+        /* Receives the string from clients' data and converts the string to float. */
         float dataConverted = Float.parseFloat(dataFromFile.toString());
-
+        /* returns the float */
         return dataConverted;
     }
 

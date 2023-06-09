@@ -56,13 +56,28 @@ public class DataBaseConnection {
     public DataBaseConnection(List<Client> clientList){
 
         try {
-
+            /*
+            This will create a class for Driver.
+            It works for the dynamic loading of JDBC drivers in databases.
+            This is because the specific driver may vary according to the database used,
+            and the choice of the driver is made at runtime according to the user’s
+             configuration or property file.
+             */
             Class.forName(driver);
+            // connection acquires the value of the user's database pass.
             connection = DriverManager.getConnection(url, user, pass);
-            JOptionPane.showMessageDialog(null, "Connected successfully.");
-
+            /*
+            If the connection with the database is succesfull, it will show a message.
+             */
+            JOptionPane.showMessageDialog(null, "Connected successfully to Database.");
+            /*
+            We send the previous statement through the connection to the database
+             */
             PreparedStatement insertClientData = connection.prepareStatement(insertStatementSql);
-
+            /*
+            For every client stored in the clientList, the cycle will make an insert statement
+            to the database
+             */
             for(Client clients : clientList) {
                 insertClientData.setString(1, clients.getName());
                 insertClientData.setString(2, clients.getPhone());
@@ -75,18 +90,22 @@ public class DataBaseConnection {
                 insertClientData.executeUpdate();
 
             }
+            // If the process is finalized without any mistake, a message will be shown.
             JOptionPane.showMessageDialog(null, "Client List Inserted in Data Base Successfully");
+            //Here the insert statements is finalized.
             insertClientData.close();
+            //The connection with the data base closes.
             connection.close();
-
-
+        /*
+        If any problem occurs while the connection with the database is made, a message
+        will be shown
+        */
         }catch(SQLException e){
             System.out.println(e.toString());
+        //If a problem occurs with clients data, a message will be shown.
         }catch (Exception f) {
             System.out.println(f.toString());
         }finally {
-
         }
-
     }
 }

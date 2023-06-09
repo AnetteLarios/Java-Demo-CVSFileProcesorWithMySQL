@@ -14,7 +14,7 @@ import com.mx.application.model.Client;
 
 import com.mx.application.sql.DataBaseConnection;
 
-import com.mx.application.utils.MathUtils;
+import com.mx.application.utils.TaxCalculator;
 import com.mx.application.utils.StringsUtils;
 
 /*FileProcessorService is the main class in charge to process all the data obtained from the file to be send to
@@ -35,10 +35,19 @@ public class FileProcessorService {
      */
     public static void fileOpenAndRead(String filePath) throws IOException {
 
+        //Try to create a fileReader object for file in the given filepath
         try(FileReader fileReader = new FileReader(filePath);
-
+            /*
+            Try to create a buffered reader object called fileToRead for the same file.
+            This allow us to read the file line by line.
+             */
             BufferedReader fileToRead = new BufferedReader(fileReader)){
 
+            /*
+            Try to create a DataBaseConnection object to make the DataBaseConnection with the
+            file and calls fileReaderProcessor fuction passing as reference the buffered reader object
+            that contains the file to read.
+             */
             DataBaseConnection connectToDataBase = new DataBaseConnection(fileReaderProcessor(fileToRead));
 
         }catch(Exception e) {
@@ -60,17 +69,37 @@ public class FileProcessorService {
      * @since 2023-06-06
      */
     private static List<Client> fileReaderProcessor(BufferedReader fileToRead) throws IOException {
-
+        /*
+        Create a list of type client called clientList that will work as a dictionary.
+        Client data will be stored here.
+         */
         List<Client> clientList = new ArrayList<>();
 
+        //String called line declared. The lines of the file will be stored here.
         String line;
-
+        /*
+        Array of Strings declared, named dataFromFile. Here the information line by line
+        will be stored. One per array position.
+         */
         String[] dataFromFile;
 
+        /*
+        Float variable called tax initialized in 0. The tax will be calculated per client
+        with clients' data
+        */
         float tax = 0;
 
+        /*
+        While is not the end of the file, line will be equal to the object in charge
+        to read the lines of the file.
+         */
         while((line = fileToRead.readLine()) != null) {
-
+            /*
+            line contains all the data of the customers, but we need to separate it by fields.
+            In the txt file, the fields are separated by ",". This fuction splits lines detectin ","
+            and stores them in array's positions one by one.
+            This will be made line by line.  (Client by client).
+             */
             dataFromFile = line.split(",");
             /*
              * printClient call will show all the data obtained from the file
@@ -100,7 +129,7 @@ public class FileProcessorService {
              * @param numberRangeClients it is the return of the last first function extracted from clients' data
              * @param balanceClientNumnber it is the return if the last second function extracted from clients' data.
              */
-            tax = MathUtils.assignTaxAccordingToNumberRange(numberRangeClients, balanceClientsNumber);
+            tax = TaxCalculator.assignTaxAccordingToNumberRange(numberRangeClients, balanceClientsNumber);
 
             /*
              * Client is a call to Client constructor model to assign the values o each client stored in dataFromFilearray
@@ -117,7 +146,7 @@ public class FileProcessorService {
                     dataFromFile[7],
                     tax));
         }
-
+        //Once all the clients are added to the list, the function returns the list.
         return clientList;
     }
 
@@ -129,18 +158,29 @@ public class FileProcessorService {
      * @since 2023-06-06
      */
     private static void printClient(String dataFromFile[]) {
+        /*
+        Converts in one string everyline readed. In this case, in one line is located
+        all the information of one client, this applies for all clients.
+        */
 
-        System.out.println("data name: "+ dataFromFile[0]
-                +" phone: " + dataFromFile[1]
-                +" address: "+ dataFromFile[2]
-                +" email: "+ dataFromFile[3]
-                +" country: " + dataFromFile[4]
-                +" numberrange:  "+ dataFromFile[5]
-                +" balance: " + dataFromFile[6]
-                +" rfc: "+ dataFromFile[7]);
+        String dataByClient = String.format("data name: %s " +
+                        "phone: %s " +
+                        "address: %s " +
+                        "email: %s " +
+                        "country: %s" +
+                        "number range: %s " +
+                        "balance: %s " +
+                        "rfc: %s",
+                        dataFromFile[0],
+                        dataFromFile[1],
+                        dataFromFile[2],
+                        dataFromFile[3],
+                        dataFromFile[4],
+                        dataFromFile[5],
+                        dataFromFile[6],
+                        dataFromFile[7]);
+        System.out.println(dataByClient);
     }
-
-
     /*
      * convertStringBalanceToFloat is a method that receives a String, removes "$" symbol and converts it to float.
      * @param dataFromFile String is specifically the balance of all customers
@@ -150,11 +190,15 @@ public class FileProcessorService {
      * @since 2023-06-06
      */
     public static float convertStringBalanceToFloat(String dataFromFile) {
-
+        /*
+        The String that the function receives is read by replace function, and it will
+        replace the "$" symbol by blank spaces.
+        This has to be done to calculate the tax.
+         */
         String dataToConvert = dataFromFile.replace("$", "");
-
+        // After the special character is removed, the string is converted to float.
         float dataConverted = Float.parseFloat(dataToConvert.toString());
-
+        //The function returns the String converted to float
         return dataConverted;
     }
 }
